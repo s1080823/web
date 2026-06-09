@@ -1,10 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
-from firebase_admin import firestore
-import re
+
 from flask import Flask, render_template,request, make_response, jsonify
+from datetime import datetime
+
+import os
+import json
+import firebase_admin
+from firebase_admin import credentials, firestore
+from google import genai
+from google.genai import types
+
+if os.path.exists('serviceAccountKey.json'):
+    cred = credentials.Certificate('serviceAccountKey.json')
+else:
+    firebase_config = os.getenv('FIREBASE_CONFIG')
+    cred_dict = json.loads(firebase_config)
+    cred = credentials.Certificate(cred_dict)
+
+firebase_admin.initialize_app(cred)
 
 app = Flask(__name__)
+
+client = genai.Client()
 
 @app.route("/fiftylan_news")
 def fiftylan_news():
